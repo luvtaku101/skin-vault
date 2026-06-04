@@ -717,6 +717,39 @@ async function scanWithAI() {
     const base64 = capturedImageData.split(',')[1];
     const mediaType = capturedImageData.split(';')[0].split(':')[1];
 
+    const response = await fetch('https://kitchen-magic-ai.mktg201.workers.dev/scan-product', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64, mediaType })
+    });
+
+    const parsed = await response.json();
+
+    if(parsed.brand) document.getElementById('f-brand').value = parsed.brand;
+    if(parsed.name) document.getElementById('f-name').value = parsed.name;
+    if(parsed.size) document.getElementById('f-size').value = parsed.size;
+    if(parsed.category) document.getElementById('f-category').value = parsed.category;
+    togglePiecesRow();
+    showToast('AI scan complete ✦');
+  } catch(err) {
+    showToast('Scan failed – please fill in manually');
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>✦ Re-scan</span>';
+  msg.style.display = 'none';
+}  if(!capturedImageData) return;
+  const btn = document.getElementById('scanBtn');
+  const msg = document.getElementById('scanningMsg');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div><span>Scanning…</span>';
+  msg.style.display = '';
+
+  try {
+    const base64 = capturedImageData.split(',')[1];
+    const mediaType = capturedImageData.split(';')[0].split(':')[1];
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
