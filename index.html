@@ -342,7 +342,7 @@
         <p>Take a photo or upload image</p>
         <small>AI will auto-detect product name & size</small>
       </div>
-      <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleImage(event)">
+      <input type="file" id="cameraInput" accept="image/*" onchange="handleImage(event)">
     </div>
     <div id="previewSection" style="display:none">
       <div class="preview-wrap">
@@ -690,10 +690,21 @@ function handleImage(e) {
   if(!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    capturedImageData = ev.target.result;
-    document.getElementById('previewImg').src = capturedImageData;
-    document.getElementById('previewSection').style.display = '';
-    document.getElementById('cameraSection').style.display = 'none';
+    // Compress image to max 800px wide, quality 0.7 to avoid localStorage limits on mobile
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 800;
+      let w = img.width, h = img.height;
+      if(w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      capturedImageData = canvas.toDataURL('image/jpeg', 0.7);
+      document.getElementById('previewImg').src = capturedImageData;
+      document.getElementById('previewSection').style.display = '';
+      document.getElementById('cameraSection').style.display = 'none';
+    };
+    img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
   e.target.value = '';
@@ -724,67 +735,6 @@ async function scanWithAI() {
     });
 
     const parsed = await response.json();
-
-    if(parsed.brand) document.getElementById('f-brand').value = parsed.brand;
-    if(parsed.name) document.getElementById('f-name').value = parsed.name;
-    if(parsed.size) document.getElementById('f-size').value = parsed.size;
-    if(parsed.category) document.getElementById('f-category').value = parsed.category;
-    togglePiecesRow();
-    showToast('AI scan complete ✦');
-  } catch(err) {
-    showToast('Scan failed – please fill in manually');
-    console.error(err);
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '<span>✦ Re-scan</span>';
-  msg.style.display = 'none';
-}  if(!capturedImageData) return;
-  const btn = document.getElementById('scanBtn');
-  const msg = document.getElementById('scanningMsg');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div><span>Scanning…</span>';
-  msg.style.display = '';
-
-  try {
-    const base64 = capturedImageData.split(',')[1];
-    const mediaType = capturedImageData.split(';')[0].split(':')[1];
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: mediaType, data: base64 }
-            },
-            {
-              type: 'text',
-              text: `You are a skincare product scanner. Analyse this image and extract product details. 
-Respond ONLY with a raw JSON object (no markdown, no backticks), with these fields:
-{
-  "brand": "brand name in capitals",
-  "name": "full product name",
-  "size": "volume or weight e.g. 50mL or 30g",
-  "category": one of ["Toner","Serum","Eye Serum / Cream","Face Cream / Moisturiser","Face Mask","Cleanser","Sunscreen / SPF","Exfoliator / AHA / BHA","Oil / Facial Oil","Mist / Essence","Lip Care","Supplement","Other"]
-}
-If any field is unknown, use empty string. Be accurate and concise.`
-            }
-          ]
-        }]
-      })
-    });
-
-    const data = await response.json();
-    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    let parsed;
-    try { parsed = JSON.parse(text.replace(/```json|```/g,'').trim()); } catch { parsed = {}; }
-
     if(parsed.brand) document.getElementById('f-brand').value = parsed.brand;
     if(parsed.name) document.getElementById('f-name').value = parsed.name;
     if(parsed.size) document.getElementById('f-size').value = parsed.size;
