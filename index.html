@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Skin Vault ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0EC;
+    --surface: #FEFCFA;
+    --surface2: #F0EAE3;
+    --accent: #C4956A;
+    --accent2: #8B6F5E;
+    --text: #2C2420;
+    --text2: #7A6A62;
+    --text3: #B0A097;
+    --green: #6B8F71;
+    --red: #B05C5C;
+    --border: #E8DDD5;
+    --shadow: rgba(44,36,32,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    padding-bottom: 100px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; letter-spacing: 2px; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .header-actions { display: flex; gap: 10px; }
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1.5px solid var(--border); background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; color: var(--text2);
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .icon-btn:hover { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+
+  /* SEARCH */
+  .search-wrap { margin-top: 14px; position: relative; }
+  .search-wrap input {
+    width: 100%; padding: 10px 16px 10px 38px;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 50px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--text); outline: none; transition: border-color 0.2s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap input::placeholder { color: var(--text3); }
+  .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 8px; padding: 14px 20px 0; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 7px 16px; border-radius: 50px; font-size: 12.5px; font-weight: 500;
+    border: 1.5px solid var(--border); background: var(--surface); color: var(--text2);
+    cursor: pointer; white-space: nowrap; transition: all 0.2s;
+  }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+  .tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex; gap: 8px; padding: 14px 20px;
+  }
+  .stat-pill {
+    flex: 1; background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 10px 12px; text-align: center;
+  }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 10px; color: var(--text3); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* CATEGORY GROUPS */
+  .content { padding: 0 16px; }
+  .category-group { margin-bottom: 8px; }
+  .category-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 4px 6px; cursor: pointer; user-select: none;
+  }
+  .category-label {
+    font-size: 11.5px; color: var(--text2); font-weight: 500;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .category-count {
+    font-size: 11px; color: var(--text3); background: var(--surface2);
+    padding: 2px 7px; border-radius: 50px;
+  }
+  .category-arrow { margin-left: auto; color: var(--text3); font-size: 10px; transition: transform 0.2s; }
+  .category-arrow.open { transform: rotate(90deg); }
+
+  /* ITEM CARD */
+  .item-card {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 14px; margin-bottom: 8px;
+    display: flex; gap: 12px; align-items: flex-start;
+    position: relative; overflow: hidden;
+    animation: slideIn 0.25s ease;
+  }
+  @keyframes slideIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+  .item-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px var(--shadow); }
+
+  .item-img {
+    width: 64px; height: 64px; border-radius: 10px;
+    object-fit: cover; background: var(--surface2); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; overflow: hidden;
+  }
+  .item-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+
+  .item-info { flex: 1; min-width: 0; }
+  .item-brand { font-size: 11px; color: var(--accent); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .item-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; line-height: 1.25; margin: 2px 0 6px; color: var(--text); }
+  .item-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .item-size { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 4px; }
+  .item-size svg { width: 11px; height: 11px; }
+  .item-qty {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface2); border-radius: 50px; padding: 3px 10px 3px 8px;
+  }
+  .item-qty-num { font-size: 12px; font-weight: 500; color: var(--text); }
+  .qty-btn { width: 18px; height: 18px; border-radius: 50%; border: none; background: var(--border); color: var(--text2); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; line-height: 1; }
+  .qty-btn:hover { background: var(--accent); color: white; }
+
+  .item-status {
+    font-size: 11px; padding: 2px 8px; border-radius: 50px; font-weight: 500;
+  }
+  .status-unopened { background: #EEF4EF; color: var(--green); }
+  .status-open { background: #FDF3EC; color: var(--accent2); }
+  .status-low { background: #FAEAEA; color: var(--red); }
+
+  .item-actions { display: flex; flex-direction: column; gap: 6px; margin-left: 4px; }
+  .action-btn {
+    width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: transparent; color: var(--text3); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    transition: all 0.2s;
+  }
+  .action-btn:hover { border-color: var(--accent); color: var(--accent); background: #FEF7F2; }
+  .action-btn.delete:hover { border-color: var(--red); color: var(--red); background: #FAEAEA; }
+
+  .expiry { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* PIECES BADGE for masks */
+  .pieces-badge {
+    font-size: 11px; background: #EEF2FA; color: #5E72A8; padding: 2px 8px; border-radius: 50px; font-weight: 500;
+  }
+
+  /* FAB */
+  .fab {
+    position: fixed; bottom: 24px; right: calc(50% - 215px + 16px);
+    width: 54px; height: 54px; border-radius: 50%; background: var(--accent);
+    color: white; font-size: 24px; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(196,149,106,0.45);
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 200;
+  }
+  .fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(196,149,106,0.6); }
+
+  /* MODAL OVERLAY */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(44,36,32,0.5);
+    z-index: 300; display: flex; align-items: flex-end; justify-content: center;
+    backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface); border-radius: 24px 24px 0 0;
+    width: 100%; max-width: 430px; padding: 24px 20px 40px;
+    max-height: 92vh; overflow-y: auto;
+    transform: translateY(40px); transition: transform 0.3s ease;
+  }
+  .overlay.open .modal { transform: translateY(0); }
+
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; margin-bottom: 20px; color: var(--text); }
+
+  /* FORM */
+  .form-row { margin-bottom: 14px; }
+  .form-label { font-size: 12px; color: var(--text2); font-weight: 500; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 11px 14px;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+    color: var(--text); outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+
+  .status-options { display: flex; gap: 8px; }
+  .status-opt {
+    flex: 1; padding: 9px 4px; border-radius: 10px; border: 1.5px solid var(--border);
+    text-align: center; font-size: 12px; cursor: pointer; transition: all 0.2s; color: var(--text2);
+  }
+  .status-opt.sel-unopened { background: #EEF4EF; border-color: var(--green); color: var(--green); font-weight: 500; }
+  .status-opt.sel-open { background: #FDF3EC; border-color: var(--accent2); color: var(--accent2); font-weight: 500; }
+  .status-opt.sel-low { background: #FAEAEA; border-color: var(--red); color: var(--red); font-weight: 500; }
+
+  /* CAMERA AREA */
+  .camera-area {
+    border: 2px dashed var(--border); border-radius: 14px; padding: 20px;
+    text-align: center; margin-bottom: 16px; cursor: pointer; transition: border-color 0.2s;
+    background: var(--surface2);
+  }
+  .camera-area:hover { border-color: var(--accent); }
+  .camera-area .cam-icon { font-size: 28px; margin-bottom: 8px; }
+  .camera-area p { font-size: 13px; color: var(--text2); }
+  .camera-area small { font-size: 11px; color: var(--text3); }
+  #cameraInput { display: none; }
+
+  .preview-wrap { position: relative; margin-bottom: 16px; }
+  .preview-img { width: 100%; max-height: 180px; object-fit: cover; border-radius: 12px; }
+  .preview-remove {
+    position: absolute; top: 8px; right: 8px; width: 28px; height: 28px;
+    background: rgba(44,36,32,0.6); border: none; border-radius: 50%;
+    color: white; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
+  }
+
+  .scan-btn {
+    width: 100%; padding: 12px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border: none; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 0.2s;
+  }
+  .scan-btn:hover { opacity: 0.9; }
+  .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .scanning-indicator { text-align: center; padding: 10px; color: var(--accent); font-size: 13px; }
+  .scanning-indicator .dots { display: inline-block; animation: dots 1.2s infinite; }
+  @keyframes dots { 0%,20%{content:'.'} 40%{content:'..'} 60%,100%{content:'...'} }
+
+  .save-btn {
+    width: 100%; padding: 14px; border-radius: 12px;
+    background: var(--text); color: white; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+    cursor: pointer; margin-top: 8px; transition: opacity 0.2s;
+  }
+  .save-btn:hover { opacity: 0.85; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: white; padding: 10px 20px; border-radius: 50px;
+    font-size: 13px; z-index: 500; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--text3); }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* CONFIRM DELETE */
+  .confirm-modal { padding: 28px 24px 36px; }
+  .confirm-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .confirm-text { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.5; }
+  .confirm-btns { display: flex; gap: 10px; }
+  .btn-cancel {
+    flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border);
+    background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; color: var(--text2);
+  }
+  .btn-delete {
+    flex: 1; padding: 12px; border-radius: 10px; border: none;
+    background: var(--red); color: white;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; font-weight: 500;
+  }
+
+  .divider { width: 100%; height: 1px; background: var(--border); margin: 4px 0 12px; }
+
+  /* LOADING SPINNER */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo">Skin<span>Vault</span> ✦</div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openSortModal()" title="Sort">⇅</button>
+      <button class="icon-btn" onclick="exportData()" title="Export">↗</button>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search by name, brand or category..." oninput="renderAll()">
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs" id="tabsRow">
+  <div class="tab active" data-cat="all" onclick="setTab(this)">All</div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-pill"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Items</div></div>
+  <div class="stat-pill"><div class="stat-num" id="stat-cats">0</div><div class="stat-label">Categories</div></div>
+  <div class="stat-pill"><div class="stat-num" id="stat-low">0</div><div class="stat-label">Running Low</div></div>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="contentArea"></div>
+
+<!-- FAB -->
+<button class="fab" onclick="openAddModal()">+</button>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="overlay" id="addOverlay" onclick="overlayClick(event,'addOverlay')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">Add Product</div>
+
+    <!-- CAMERA -->
+    <div id="cameraSection">
+      <div class="camera-area" onclick="document.getElementById('cameraInput').click()">
+        <div class="cam-icon">📸</div>
+        <p>Take a photo or upload image</p>
+        <small>AI will auto-detect product name & size</small>
+      </div>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleImage(event)">
+    </div>
+    <div id="previewSection" style="display:none">
+      <div class="preview-wrap">
+        <img id="previewImg" class="preview-img" src="" alt="preview">
+        <button class="preview-remove" onclick="removePreview()">✕</button>
+      </div>
+      <button class="scan-btn" id="scanBtn" onclick="scanWithAI()">
+        <span>✦ Scan with AI</span>
+      </button>
+      <div id="scanningMsg" style="display:none" class="scanning-indicator">Analysing image<span class="dots">...</span></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="form-row">
+      <label class="form-label">Brand</label>
+      <input class="form-input" id="f-brand" placeholder="e.g. OLEHENRIKSEN">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Product Name</label>
+      <input class="form-input" id="f-name" placeholder="e.g. Banana Bright Eye Crème">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="f-category">
+        <option value="">Select category...</option>
+        <option>Toner</option>
+        <option>Serum</option>
+        <option>Eye Serum / Cream</option>
+        <option>Face Cream / Moisturiser</option>
+        <option>Face Mask</option>
+        <option>Cleanser</option>
+        <option>Sunscreen / SPF</option>
+        <option>Exfoliator / AHA / BHA</option>
+        <option>Oil / Facial Oil</option>
+        <option>Mist / Essence</option>
+        <option>Lip Care</option>
+        <option>Supplement</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="form-row-2">
+      <div>
+        <label class="form-label">Size</label>
+        <input class="form-input" id="f-size" placeholder="e.g. 50mL">
+      </div>
+      <div>
+        <label class="form-label">Quantity (units)</label>
+        <input class="form-input" id="f-qty" type="number" min="1" value="1">
+      </div>
+    </div>
+
+    <div id="piecesRow" style="display:none" class="form-row">
+      <label class="form-label">Pieces per pack (for masks)</label>
+      <input class="form-input" id="f-pieces" type="number" min="1" placeholder="e.g. 5">
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Status</label>
+      <div class="status-options">
+        <div class="status-opt sel-unopened" data-val="Unopened" onclick="selectStatus(this)">Unopened</div>
+        <div class="status-opt" data-val="Open" onclick="selectStatus(this)">In Use</div>
+        <div class="status-opt" data-val="Low" onclick="selectStatus(this)">Running Low</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Expiry Date (optional)</label>
+      <input class="form-input" id="f-expiry" type="month">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Notes (optional)</label>
+      <textarea class="form-textarea" id="f-notes" rows="2" placeholder="e.g. opened Jan 2025..."></textarea>
+    </div>
+
+    <button class="save-btn" onclick="saveItem()">Save Product</button>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="overlay" id="deleteOverlay" onclick="overlayClick(event,'deleteOverlay')">
+  <div class="modal confirm-modal">
+    <div class="modal-handle"></div>
+    <div class="confirm-title">Remove Product?</div>
+    <div class="confirm-text" id="deleteMsg">This will permanently remove the item from your vault.</div>
+    <div class="confirm-btns">
+      <button class="btn-cancel" onclick="closeModal('deleteOverlay')">Cancel</button>
+      <button class="btn-delete" onclick="confirmDelete()">Remove</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────
+const STORAGE_KEY = 'skinvault_items';
+let items = [];
+let editId = null;
+let deleteId = null;
+let currentTab = 'all';
+let capturedImageData = null;
+
+const CATEGORIES = [
+  'Toner','Serum','Eye Serum / Cream','Face Cream / Moisturiser','Face Mask',
+  'Cleanser','Sunscreen / SPF','Exfoliator / AHA / BHA','Oil / Facial Oil',
+  'Mist / Essence','Lip Care','Supplement','Other'
+];
+
+function load() {
+  try { items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { items = []; }
+}
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+
+// ─── RENDER ──────────────────────────────────────────────────────
+function renderAll() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = items.filter(it => {
+    const matchTab = currentTab === 'all' || it.category === currentTab;
+    const matchQ = !q || it.name.toLowerCase().includes(q) || (it.brand||'').toLowerCase().includes(q) || (it.category||'').toLowerCase().includes(q);
+    return matchTab && matchQ;
+  });
+
+  // stats
+  const allCats = [...new Set(items.map(i=>i.category))].filter(Boolean);
+  document.getElementById('stat-total').textContent = items.reduce((s,i)=>s+(+i.qty||1),0);
+  document.getElementById('stat-cats').textContent = allCats.length;
+  document.getElementById('stat-low').textContent = items.filter(i=>i.status==='Low').length;
+
+  // tabs
+  const tabsRow = document.getElementById('tabsRow');
+  tabsRow.innerHTML = `<div class="tab ${currentTab==='all'?'active':''}" data-cat="all" onclick="setTab(this)">All</div>`;
+  CATEGORIES.forEach(cat => {
+    const has = items.some(i=>i.category===cat);
+    if(has) {
+      const active = currentTab===cat?'active':'';
+      tabsRow.innerHTML += `<div class="tab ${active}" data-cat="${cat}" onclick="setTab(this)">${cat}</div>`;
+    }
+  });
+
+  // group by category
+  const area = document.getElementById('contentArea');
+  if(!filtered.length) {
+    area.innerHTML = `<div class="empty-state"><div class="empty-icon">🧴</div><p>No products yet.<br>Tap + to add your first item.</p></div>`;
+    return;
+  }
+
+  const grouped = {};
+  filtered.forEach(it => {
+    const k = it.category || 'Other';
+    if(!grouped[k]) grouped[k] = [];
+    grouped[k].push(it);
+  });
+
+  let html = '';
+  Object.keys(grouped).sort().forEach(cat => {
+    const totalQty = grouped[cat].reduce((s,i)=>s+(+i.qty||1),0);
+    html += `<div class="category-group">
+      <div class="category-header" onclick="toggleCat(this)">
+        <span class="category-label">${cat}</span>
+        <span class="category-count">${grouped[cat].length} item${grouped[cat].length>1?'s':''} · ${totalQty} units</span>
+        <span class="category-arrow open">▶</span>
+      </div>
+      <div class="category-items">`;
+    grouped[cat].forEach(it => { html += renderCard(it); });
+    html += `</div></div>`;
+  });
+  area.innerHTML = html;
+}
+
+function renderCard(it) {
+  const statusClass = it.status==='Unopened'?'status-unopened':it.status==='Low'?'status-low':'status-open';
+  const statusLabel = it.status==='Unopened'?'Unopened':it.status==='Low'?'Running Low':'In Use';
+  const imgHtml = it.image
+    ? `<img src="${it.image}" alt="${it.name}">`
+    : `<span>🧴</span>`;
+  const expiryHtml = it.expiry ? `<div class="expiry">Exp: ${it.expiry}</div>` : '';
+  const piecesHtml = (it.category==='Face Mask' && it.pieces) ? `<span class="pieces-badge">×${it.pieces} pcs</span>` : '';
+  const sizeHtml = it.size ? `<span class="item-size">💧 ${it.size}</span>` : '';
+  const notesHtml = it.notes ? `<div class="expiry" style="color:var(--text3)">${it.notes}</div>` : '';
+
+  return `<div class="item-card" id="card-${it.id}">
+    <div class="item-img">${imgHtml}</div>
+    <div class="item-info">
+      <div class="item-brand">${it.brand || ''}</div>
+      <div class="item-name">${it.name}</div>
+      <div class="item-meta">
+        ${sizeHtml}
+        <div class="item-qty">
+          <button class="qty-btn" onclick="changeQty('${it.id}',-1)">−</button>
+          <span class="item-qty-num">×${it.qty||1}</span>
+          <button class="qty-btn" onclick="changeQty('${it.id}',1)">+</button>
+        </div>
+        <span class="item-status ${statusClass}">${statusLabel}</span>
+        ${piecesHtml}
+      </div>
+      ${expiryHtml}
+      ${notesHtml}
+    </div>
+    <div class="item-actions">
+      <button class="action-btn" onclick="openEditModal('${it.id}')" title="Edit">✏️</button>
+      <button class="action-btn delete" onclick="openDelete('${it.id}')" title="Delete">🗑</button>
+    </div>
+  </div>`;
+}
+
+function toggleCat(el) {
+  const items = el.nextElementSibling;
+  const arrow = el.querySelector('.category-arrow');
+  if(items.style.display==='none') { items.style.display=''; arrow.classList.add('open'); }
+  else { items.style.display='none'; arrow.classList.remove('open'); }
+}
+
+function setTab(el) {
+  currentTab = el.dataset.cat;
+  renderAll();
+}
+
+// ─── QTY ─────────────────────────────────────────────────────────
+function changeQty(id, delta) {
+  const it = items.find(i=>i.id===id);
+  if(!it) return;
+  const newQty = Math.max(0, (it.qty||1) + delta);
+  if(newQty === 0) { openDelete(id); return; }
+  it.qty = newQty;
+  if(newQty === 1) it.status = 'Low';
+  save(); renderAll();
+}
+
+// ─── ADD / EDIT MODAL ────────────────────────────────────────────
+function openAddModal() {
+  editId = null;
+  capturedImageData = null;
+  document.getElementById('modalTitle').textContent = 'Add Product';
+  clearForm();
+  showModal('addOverlay');
+}
+
+function openEditModal(id) {
+  editId = id;
+  const it = items.find(i=>i.id===id);
+  if(!it) return;
+  document.getElementById('modalTitle').textContent = 'Edit Product';
+  document.getElementById('f-brand').value = it.brand||'';
+  document.getElementById('f-name').value = it.name||'';
+  document.getElementById('f-category').value = it.category||'';
+  document.getElementById('f-size').value = it.size||'';
+  document.getElementById('f-qty').value = it.qty||1;
+  document.getElementById('f-expiry').value = it.expiry||'';
+  document.getElementById('f-notes').value = it.notes||'';
+  document.getElementById('f-pieces').value = it.pieces||'';
+  capturedImageData = it.image || null;
+
+  if(it.image) {
+    document.getElementById('previewImg').src = it.image;
+    document.getElementById('previewSection').style.display = '';
+    document.getElementById('cameraSection').style.display = 'none';
+  } else {
+    document.getElementById('previewSection').style.display = 'none';
+    document.getElementById('cameraSection').style.display = '';
+  }
+
+  document.querySelectorAll('.status-opt').forEach(o=>{
+    o.className='status-opt';
+    if(o.dataset.val===it.status) o.className='status-opt sel-'+it.status.toLowerCase();
+  });
+  togglePiecesRow();
+  showModal('addOverlay');
+}
+
+function clearForm() {
+  ['f-brand','f-name','f-size','f-expiry','f-notes','f-pieces'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-qty').value = 1;
+  document.getElementById('f-category').value = '';
+  document.getElementById('previewSection').style.display = 'none';
+  document.getElementById('cameraSection').style.display = '';
+  document.getElementById('scanningMsg').style.display = 'none';
+  document.getElementById('scanBtn').disabled = false;
+  document.getElementById('scanBtn').innerHTML = '<span>✦ Scan with AI</span>';
+  document.querySelectorAll('.status-opt').forEach(o=>{
+    o.className='status-opt'+(o.dataset.val==='Unopened'?' sel-unopened':'');
+  });
+  document.getElementById('piecesRow').style.display = 'none';
+}
+
+function selectStatus(el) {
+  document.querySelectorAll('.status-opt').forEach(o=>o.className='status-opt');
+  const v = el.dataset.val.toLowerCase();
+  el.className = 'status-opt sel-'+v;
+}
+
+function togglePiecesRow() {
+  const cat = document.getElementById('f-category').value;
+  document.getElementById('piecesRow').style.display = cat==='Face Mask'?'':'none';
+}
+document.getElementById('f-category').addEventListener('change', togglePiecesRow);
+
+function saveItem() {
+  const name = document.getElementById('f-name').value.trim();
+  if(!name) { showToast('Please enter a product name'); return; }
+  const status = (document.querySelector('.status-opt[class*="sel-"]')||{dataset:{val:'Unopened'}}).dataset.val;
+
+  const item = {
+    id: editId || Date.now().toString(),
+    brand: document.getElementById('f-brand').value.trim(),
+    name,
+    category: document.getElementById('f-category').value || 'Other',
+    size: document.getElementById('f-size').value.trim(),
+    qty: Math.max(1, parseInt(document.getElementById('f-qty').value)||1),
+    status,
+    expiry: document.getElementById('f-expiry').value,
+    notes: document.getElementById('f-notes').value.trim(),
+    pieces: document.getElementById('f-pieces').value.trim(),
+    image: capturedImageData || null,
+    added: editId ? (items.find(i=>i.id===editId)||{}).added : new Date().toISOString()
+  };
+
+  if(editId) { const idx = items.findIndex(i=>i.id===editId); items[idx]=item; }
+  else items.unshift(item);
+  save(); renderAll();
+  closeModal('addOverlay');
+  showToast(editId ? 'Product updated ✓' : 'Product added ✓');
+}
+
+// ─── DELETE ───────────────────────────────────────────────────────
+function openDelete(id) {
+  deleteId = id;
+  const it = items.find(i=>i.id===id);
+  document.getElementById('deleteMsg').textContent = it
+    ? `Remove "${it.name}" from your vault? This cannot be undone.`
+    : 'This will permanently remove the item.';
+  showModal('deleteOverlay');
+}
+function confirmDelete() {
+  if(!deleteId) return;
+  items = items.filter(i=>i.id!==deleteId);
+  save(); renderAll();
+  closeModal('deleteOverlay');
+  showToast('Product removed');
+  deleteId = null;
+}
+
+// ─── IMAGE + AI ───────────────────────────────────────────────────
+function handleImage(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    capturedImageData = ev.target.result;
+    document.getElementById('previewImg').src = capturedImageData;
+    document.getElementById('previewSection').style.display = '';
+    document.getElementById('cameraSection').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function removePreview() {
+  capturedImageData = null;
+  document.getElementById('previewSection').style.display = 'none';
+  document.getElementById('cameraSection').style.display = '';
+}
+
+async function scanWithAI() {
+  if(!capturedImageData) return;
+  const btn = document.getElementById('scanBtn');
+  const msg = document.getElementById('scanningMsg');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div><span>Scanning…</span>';
+  msg.style.display = '';
+
+  try {
+    const base64 = capturedImageData.split(',')[1];
+    const mediaType = capturedImageData.split(';')[0].split(':')[1];
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: mediaType, data: base64 }
+            },
+            {
+              type: 'text',
+              text: `You are a skincare product scanner. Analyse this image and extract product details. 
+Respond ONLY with a raw JSON object (no markdown, no backticks), with these fields:
+{
+  "brand": "brand name in capitals",
+  "name": "full product name",
+  "size": "volume or weight e.g. 50mL or 30g",
+  "category": one of ["Toner","Serum","Eye Serum / Cream","Face Cream / Moisturiser","Face Mask","Cleanser","Sunscreen / SPF","Exfoliator / AHA / BHA","Oil / Facial Oil","Mist / Essence","Lip Care","Supplement","Other"]
+}
+If any field is unknown, use empty string. Be accurate and concise.`
+            }
+          ]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let parsed;
+    try { parsed = JSON.parse(text.replace(/```json|```/g,'').trim()); } catch { parsed = {}; }
+
+    if(parsed.brand) document.getElementById('f-brand').value = parsed.brand;
+    if(parsed.name) document.getElementById('f-name').value = parsed.name;
+    if(parsed.size) document.getElementById('f-size').value = parsed.size;
+    if(parsed.category) document.getElementById('f-category').value = parsed.category;
+    togglePiecesRow();
+    showToast('AI scan complete ✦');
+  } catch(err) {
+    showToast('Scan failed – please fill in manually');
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>✦ Re-scan</span>';
+  msg.style.display = 'none';
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────
+function showModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function overlayClick(e, id) { if(e.target.classList.contains('overlay')) closeModal(id); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(items,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'skinvault-backup.json';
+  a.click();
+  showToast('Data exported ✓');
+}
+
+function openSortModal() {
+  items.sort((a,b)=>a.category.localeCompare(b.category)||(a.brand||'').localeCompare(b.brand||''));
+  save(); renderAll();
+  showToast('Sorted by category');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+load();
+renderAll();
+</script>
+</body>
+</html>
